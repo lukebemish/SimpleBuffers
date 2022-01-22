@@ -116,20 +116,20 @@ public class ItemBufferBlock extends HorizontalDirectionalBlock implements Entit
                     handItem.shrink(1);
                     buffer.setTransferRank(2);
                 } else if (handItem.is(SimpleBuffersItems.SPEC_SHEET.get())) {
-                    handItem.addTagElement("stored_config", buffer.getSpecSheetTag());
                     CompoundTag tag = handItem.getTag();
                     ItemStack newItem = new ItemStack(SimpleBuffersItems.SPEC_SHEET_STORED.get());
                     newItem.setTag(tag);
                     player.getItemInHand(interactionHand).shrink(1);
+                    newItem.addTagElement("stored_config", buffer.getSpecSheetTag());
                     player.addItem(newItem);
                 } else if (handItem.is(SimpleBuffersItems.SPEC_SHEET_STORED.get())) {
                     buffer.setSpecSheetTag(handItem.getTagElement("stored_config"));
                 } else if (handItem.is(SimpleBuffersItems.SMALL_SPEC_SHEET.get())) {
                     Direction direction = blockHitResult.getDirection();
-                    handItem.addTagElement("stored_config", buffer.getSpecSheetSidedTag(direction));
                     CompoundTag tag = handItem.getTag();
                     ItemStack newItem = new ItemStack(SimpleBuffersItems.SMALL_SPEC_SHEET_STORED.get());
                     newItem.setTag(tag);
+                    newItem.addTagElement("stored_config", buffer.getSpecSheetSidedTag(direction));
                     player.getItemInHand(interactionHand).shrink(1);
                     player.addItem(newItem);
                 } else if (handItem.is(SimpleBuffersItems.SMALL_SPEC_SHEET_STORED.get())) {

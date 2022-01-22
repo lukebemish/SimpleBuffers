@@ -28,6 +28,7 @@ public class ItemBufferScreen extends AbstractContainerScreen<ItemBufferMenu> {
 
     private BufferScreenState shownState = BufferScreenState.ITEMS;
     private ItemBufferMenu bufferMenu;
+    protected int imageWidth = 176+76*2;
 
     public ItemBufferScreen(ItemBufferMenu menu, Inventory inv, Component name) {
         super(menu, inv, name);
@@ -55,7 +56,7 @@ public class ItemBufferScreen extends AbstractContainerScreen<ItemBufferMenu> {
     @Override
     protected void renderTooltip(PoseStack matrixStack, int mouseX, int mouseY) {
         super.renderTooltip(matrixStack, mouseX, mouseY);
-        int relX = (this.width - this.imageWidth) / 2;
+        int relX = (this.width - this.imageWidth+76*2) / 2;
         int relY = (this.height - this.imageHeight) / 2;
         int relMouseX = mouseX - relX;
         int relMouseY = mouseY - relY;
@@ -143,11 +144,11 @@ public class ItemBufferScreen extends AbstractContainerScreen<ItemBufferMenu> {
     @Override
     protected void renderBg(PoseStack matrixStack, float partialTicks, int mouseX, int mouseY) {
         RenderSystem.setShaderTexture(0, GUI);
-        int relX = (this.width - this.imageWidth) / 2;
+        int relX = (this.width - this.imageWidth+76*2) / 2;
         int relY = (this.height - this.imageHeight) / 2;
         int relMouseX = mouseX - relX;
         int relMouseY = mouseY - relY;
-        this.blit(matrixStack, relX, relY, 0, 0, this.imageWidth + 76, this.imageHeight);
+        this.blit(matrixStack, relX, relY, 0, 0, this.imageWidth-76, this.imageHeight);
         //speed rank
         if (this.menu.speedRank == 1) {
             this.blit(matrixStack, relX+174, relY, 108, 166, 71, 74);
@@ -198,7 +199,7 @@ public class ItemBufferScreen extends AbstractContainerScreen<ItemBufferMenu> {
         //sided info
         if (shownState != BufferScreenState.ITEMS) {
             RenderSystem.setShaderTexture(0, GUI_SIDE_INFO);
-            this.blit(matrixStack, relX, relY, 0, 0, this.imageWidth, this.imageHeight);
+            this.blit(matrixStack, relX, relY, 0, 0, this.imageWidth-76*2, this.imageHeight);
             if (7 < relMouseX && relMouseX < 24 && 34 < relMouseY && relMouseY < 51) {
                 this.blit(matrixStack, relX + 8, relY + 35, 1, 185, 16, 16);
             }
@@ -299,7 +300,7 @@ public class ItemBufferScreen extends AbstractContainerScreen<ItemBufferMenu> {
             case DOWN -> stateText = new TranslatableComponent("gui_text.simple_buffers.down");
         }
         int textLen = this.font.width(stateText);
-        this.font.draw(stack, stateText, (float)this.titleLabelX+this.imageWidth - textLen - 15, (float)this.titleLabelY, 4210752);
+        this.font.draw(stack, stateText, (float)this.titleLabelX+this.imageWidth-76*2 - textLen - 15, (float)this.titleLabelY, 4210752);
     }
 
     public void onRenderStateChange() {
@@ -337,7 +338,7 @@ public class ItemBufferScreen extends AbstractContainerScreen<ItemBufferMenu> {
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int i) {
-        int relX = (this.width - this.imageWidth) / 2;
+        int relX = (this.width - this.imageWidth+76*2) / 2;
         int relY = (this.height - this.imageHeight) / 2;
         double relMouseX = mouseX - relX;
         double relMouseY = mouseY - relY;
