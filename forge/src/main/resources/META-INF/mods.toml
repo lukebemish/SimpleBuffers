@@ -1,7 +1,7 @@
 modLoader = "javafml"
 loaderVersion = "[38,)"
-#issueTrackerURL = ""
-license = "Insert License Here"
+issueTrackerURL = "https://github.com/lukebemish/simple_buffers/issues"
+license = "LGPL v3"
 
 [[mods]]
 modId = "simple_buffers"
@@ -9,7 +9,7 @@ version = "${version}"
 displayName = "Simple Buffers"
 authors = "Luke Bemish"
 description = '''
-This is an example description! Tell everyone what your mod is about!
+Simple, configurable item buffers
 '''
 #logoFile = ""
 

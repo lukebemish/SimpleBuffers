@@ -8,10 +8,9 @@
     "Luke Bemish"
   ],
   "contact": {
-    "homepage": "https://fabricmc.net/",
-    "sources": "https://github.com/FabricMC/fabric-example-mod"
+    "sources": "https://github.com/lukebemish/simple_buffers"
   },
-  "license": "LGPLv3",
+  "license": "LGPL v3",
   "icon": "assets/simple_buffers/icon.png",
   "environment": "*",
   "entrypoints": {
