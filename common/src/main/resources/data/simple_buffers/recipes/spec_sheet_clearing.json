@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "simple_buffers:spec_sheet_stored"
+    }
+  ],
+  "result": {
+    "item": "simple_buffers:spec_sheet",
+    "count": 1
+  }
+}

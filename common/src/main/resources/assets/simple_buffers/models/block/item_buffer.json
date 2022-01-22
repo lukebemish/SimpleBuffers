@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/orientable",
+  "textures": {
+    "top": "simple_buffers:block/item_buffer_side",
+    "front": "simple_buffers:block/item_buffer_front",
+    "side": "simple_buffers:block/item_buffer_side"
+  }
+}

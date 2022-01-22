@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "simple_buffers:small_spec_sheet"
+    },
+    {
+      "item": "simple_buffers:small_spec_sheet"
+    },
+    {
+      "item": "simple_buffers:small_spec_sheet"
+    },
+    {
+      "item": "simple_buffers:small_spec_sheet"
+    },
+    {
+      "item": "simple_buffers:small_spec_sheet"
+    },
+    {
+      "item": "simple_buffers:small_spec_sheet"
+    }
+  ],
+  "result": {
+    "item": "simple_buffers:spec_sheet"
+  }
+}

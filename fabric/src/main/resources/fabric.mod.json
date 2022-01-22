@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "id": "simple_buffers",
+  "version": "${version}",
+  "name": "Simple Buffers",
+  "description": "Simple, configurable item buffers",
+  "authors": [
+    "Luke Bemish"
+  ],
+  "contact": {
+    "homepage": "https://fabricmc.net/",
+    "sources": "https://github.com/FabricMC/fabric-example-mod"
+  },
+  "license": "LGPLv3",
+  "icon": "assets/simple_buffers/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "simplebuffers.fabric.SimpleBuffersFabric"
+    ],
+    "client": [
+      "simplebuffers.fabric.SimpleBuffersClientFabric"
+    ]
+  },
+  "depends": {
+    "fabric": "*",
+    "minecraft": ">=1.18",
+    "architectury": ">=3.4.9"
+  }
+}
