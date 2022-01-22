@@ -260,6 +260,28 @@ public class ItemBufferBlockEntity extends BlockEntity implements WorldlyContain
         return filterList.get(this.rr_index_output[RelativeSide.getListPlace(side)]).copy();
     }
 
+    public boolean checkWhitelist(RelativeSide side, ItemStack itemStack) {
+        //TODO: use this everywhere
+        ArrayList<ItemStack> filterList = filterContainer.getFilterList(false, side);
+        for (ItemStack is : filterList) {
+            if (ItemUtils.countlessMatches(is, itemStack)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean checkBlacklist(RelativeSide side, ItemStack itemStack) {
+        //TODO: use this everywhere
+        ArrayList<ItemStack> filterList = filterContainer.getFilterList(false, side);
+        for (ItemStack is : filterList) {
+            if (ItemUtils.countlessMatches(is, itemStack)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     public ItemStack removeItem(int i, int j, boolean simulate, int face) {
         ItemStack itemStack = ContainerExtension.removeItem(this.buffer, i, j, simulate);
         if (!itemStack.isEmpty()) {

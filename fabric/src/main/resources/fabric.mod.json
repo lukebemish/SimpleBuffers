@@ -11,7 +11,7 @@
     "sources": "https://github.com/lukebemish/simple_buffers"
   },
   "license": "LGPL v3",
-  "icon": "assets/simple_buffers/icon.png",
+  "icon": "icon.png",
   "environment": "*",
   "entrypoints": {
     "main": [

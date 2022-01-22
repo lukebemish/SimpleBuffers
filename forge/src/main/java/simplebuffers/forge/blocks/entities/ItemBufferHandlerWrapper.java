@@ -39,17 +39,25 @@ public class ItemBufferHandlerWrapper implements IItemHandler, IItemHandlerModif
     @Override
     public ItemStack getStackInSlot(int i) {
         RelativeSide side = RelativeSide.fromDirections(dir, be.getBlockState().getValue(ItemBufferBlock.FACING));
-        if (be.outputFilterStates.getIOState(side) == FilterState.RR) {
-            ItemStack filter = be.getRROutItem(side);
-            filter.setCount(1);
-            ItemStack outItem = be.getItem(i).copy();
-            if (ItemUtils.countlessMatches(filter,outItem)) {
-                outItem.setCount(Math.min(outItem.getCount(), be.getRROutRemaining(side)));
-                return outItem;
-            }
-            return ItemStack.EMPTY;
+        switch (be.outputFilterStates.getIOState(side)) {
+            case RR:
+                ItemStack filter = be.getRROutItem(side);
+                filter.setCount(1);
+                ItemStack outItem = be.getItem(i).copy();
+                if (ItemUtils.countlessMatches(filter,outItem)) {
+                    outItem.setCount(Math.min(outItem.getCount(), be.getRROutRemaining(side)));
+                    return outItem;
+                }
+            case BLACKLIST:
+                if (be.checkBlacklist(side, be.getItem(i))) {
+                    return be.getItem(i).copy();
+                }
+            case WHITELIST:
+                if (be.checkWhitelist(side, be.getItem(i))) {
+                    return be.getItem(i).copy();
+                }
         }
-        return be.getItem(i).copy();
+        return ItemStack.EMPTY;
     }
 
     @Nonnull

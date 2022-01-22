@@ -15,13 +15,13 @@ public class SimpleBuffersItems {
     public static final RegistrySupplier<Item> SPEED_UPGRADE_2 = ITEMS.register("speed_upgrade_2", () ->
             new Item(new Item.Properties().tab(SimpleBuffers.SIMPLE_BUFFERS_TAB)));
     public static final RegistrySupplier<Item> SPEC_SHEET = ITEMS.register("spec_sheet", () ->
-            new Item(new Item.Properties().tab(SimpleBuffers.SIMPLE_BUFFERS_TAB).stacksTo(1)));
+            new Item(new Item.Properties().tab(SimpleBuffers.SIMPLE_BUFFERS_TAB)));
     public static final RegistrySupplier<Item> SMALL_SPEC_SHEET = ITEMS.register("small_spec_sheet", () ->
-            new Item(new Item.Properties().tab(SimpleBuffers.SIMPLE_BUFFERS_TAB).stacksTo(1)));
+            new Item(new Item.Properties().tab(SimpleBuffers.SIMPLE_BUFFERS_TAB)));
     public static final RegistrySupplier<Item> SPEC_SHEET_STORED = ITEMS.register("spec_sheet_stored", () ->
-            new Item(new Item.Properties()));
+            new Item(new Item.Properties().stacksTo(1)));
     public static final RegistrySupplier<Item> SMALL_SPEC_SHEET_STORED = ITEMS.register("small_spec_sheet_stored", () ->
-            new Item(new Item.Properties()));
+            new Item(new Item.Properties().stacksTo(1)));
 
     public static void init() {
         ITEMS.register();

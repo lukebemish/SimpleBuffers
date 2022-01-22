@@ -118,16 +118,20 @@ public class ItemBufferBlock extends HorizontalDirectionalBlock implements Entit
                 } else if (handItem.is(SimpleBuffersItems.SPEC_SHEET.get())) {
                     handItem.addTagElement("stored_config", buffer.getSpecSheetTag());
                     CompoundTag tag = handItem.getTag();
-                    player.setItemInHand(interactionHand, new ItemStack(SimpleBuffersItems.SPEC_SHEET_STORED.get()));
-                    player.getItemInHand(interactionHand).setTag(tag);
+                    ItemStack newItem = new ItemStack(SimpleBuffersItems.SPEC_SHEET_STORED.get());
+                    newItem.setTag(tag);
+                    player.getItemInHand(interactionHand).shrink(1);
+                    player.addItem(newItem);
                 } else if (handItem.is(SimpleBuffersItems.SPEC_SHEET_STORED.get())) {
                     buffer.setSpecSheetTag(handItem.getTagElement("stored_config"));
                 } else if (handItem.is(SimpleBuffersItems.SMALL_SPEC_SHEET.get())) {
                     Direction direction = blockHitResult.getDirection();
                     handItem.addTagElement("stored_config", buffer.getSpecSheetSidedTag(direction));
                     CompoundTag tag = handItem.getTag();
-                    player.setItemInHand(interactionHand, new ItemStack(SimpleBuffersItems.SMALL_SPEC_SHEET_STORED.get()));
-                    player.getItemInHand(interactionHand).setTag(tag);
+                    ItemStack newItem = new ItemStack(SimpleBuffersItems.SMALL_SPEC_SHEET_STORED.get());
+                    newItem.setTag(tag);
+                    player.getItemInHand(interactionHand).shrink(1);
+                    player.addItem(newItem);
                 } else if (handItem.is(SimpleBuffersItems.SMALL_SPEC_SHEET_STORED.get())) {
                     Direction direction = blockHitResult.getDirection();
                     buffer.setSpecSheetSidedTag(handItem.getTagElement("stored_config"), direction);
