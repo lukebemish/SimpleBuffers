@@ -85,6 +85,7 @@ curseforge {
             changelog = 'See: https://github.com/lukebemish/simple_buffers/blob/main/changelogs/CHANGELOG.md'
             releaseType = 'beta'
             addGameVersion '1.18.1'
+            addGameVersion 'Fabric'
             mainArtifact(remapJar) {
                 displayName = "Simple Buffers [Fabric] v$project.version"
                 relations {
