@@ -42,6 +42,7 @@ public class ItemBufferBlockEntity extends BlockEntity implements WorldlyContain
     public SidedStateHolder<RedstoneState> outputRedstoneState;
     public SidedIntegers inputLimit = new SidedIntegers();
     public SidedIntegers outputLimit = new SidedIntegers();
+    public ToggleState isCompressing = ToggleState.OFF;
 
     public final ContainerData dataAccess;
     public final SidedFilterContainer filterContainer;
@@ -57,6 +58,8 @@ public class ItemBufferBlockEntity extends BlockEntity implements WorldlyContain
     private int[] rr_index_input = new int[6];
 
     private int transferRank = 0;
+
+    public static final int maxDataVal = 6*9;
 
     public int getTransferRank() {
         return this.transferRank;
@@ -82,6 +85,7 @@ public class ItemBufferBlockEntity extends BlockEntity implements WorldlyContain
         this.outputRedstoneState = new SidedStateHolder<RedstoneState>(RedstoneState.DISABLED);
         ItemBufferBlockEntity cont = this;
         this.dataAccess = new ContainerData() {
+            private final int maxVal = maxDataVal;
             public int get(int i) {
                 if (i<6) {
                     return ioStates.getIOState(RelativeSide.ORDERED_SIDES.get(i)).getVal();
@@ -101,6 +105,8 @@ public class ItemBufferBlockEntity extends BlockEntity implements WorldlyContain
                     return inputLimit.getHeld(RelativeSide.ORDERED_SIDES.get(i-42));
                 } else if (i<54) {
                     return outputLimit.getHeld(RelativeSide.ORDERED_SIDES.get(i-48));
+                } else if (i==maxVal) {
+                    return isCompressing.getVal();
                 }
                 return 0;
             }
@@ -133,11 +139,14 @@ public class ItemBufferBlockEntity extends BlockEntity implements WorldlyContain
                 } else if (i<54) {
                     outputLimit.setHeld(RelativeSide.ORDERED_SIDES.get(i-48), j);
                     cont.setChanged();
+                } else if (i==maxVal) {
+                    isCompressing = ToggleState.fromValStatic(j);
+                    cont.setChanged();
                 }
             }
 
             public int getCount() {
-                return 6*9;
+                return maxVal+1;
             }
         };
         this.filterContainer = new SidedFilterContainer(this);
@@ -241,6 +250,9 @@ public class ItemBufferBlockEntity extends BlockEntity implements WorldlyContain
         if (tag.contains("outputlimit")) {
             outputLimit.fromTag(tag.getCompound("outputlimit"));
         }
+        if (tag.contains("is_compressing")) {
+            this.isCompressing = ToggleState.fromValStatic(tag.getInt("is_compressing"));
+        }
 
         //rr information
         if (tag.contains("rr_remaining_output")) {
@@ -288,6 +300,7 @@ public class ItemBufferBlockEntity extends BlockEntity implements WorldlyContain
         tag.put("inputlimit",inputLimitTag);
         CompoundTag outputLimitTag = outputLimit.toTag();
         tag.put("outputlimit",outputLimitTag);
+        tag.putInt("is_compressing", isCompressing.getVal());
         //rr stuff
         tag.putIntArray("rr_remaining_output", rr_remaining_output);
         tag.putIntArray("rr_index_output", rr_index_output);
@@ -483,37 +496,62 @@ public class ItemBufferBlockEntity extends BlockEntity implements WorldlyContain
 
     public void flattenItemsLeft() {
         ArrayList<ItemStack> is = new ArrayList<ItemStack>();
-        ItemStack last = ItemStack.EMPTY;
-        for (ItemStack item : buffer) {
-            if (!item.isEmpty()) {
-                if (!last.isEmpty()) {
-                    if (ItemUtils.countlessMatches(last, item)) {
-                        int lastCount = last.getCount();
-                        int maxCount = Math.min(last.getMaxStackSize(), this.getMaxStackSize());
-                        if (lastCount >= maxCount) {
-                            is.add(item);
-                        } else {
-                            int itemCount = item.getCount();
-                            if (itemCount+lastCount > maxCount) {
-                                last.setCount(maxCount);
-                                item.setCount(itemCount+lastCount-maxCount);
-                                if (itemCount+lastCount-maxCount <= 0) {
-                                    item = last;
-                                } else {
-                                    is.add(item);
-                                }
+        if (isCompressing == ToggleState.ON) {
+            for (ItemStack item : buffer) {
+                if (!item.isEmpty()) {
+                    ItemStack remaining = item.copy();
+                    searching:
+                    for (ItemStack i : is) {
+                        if (ItemUtils.countlessMatches(item, i)) {
+                            int count_total = i.getCount() + item.getCount();
+                            if (count_total > item.getMaxStackSize()) {
+                                i.setCount(i.getMaxStackSize());
+                                remaining.setCount(count_total-i.getMaxStackSize());
                             } else {
-                                last.setCount(itemCount+lastCount);
-                                item = last;
+                                i.setCount(count_total);
+                                remaining.setCount(0);
                             }
+                            break searching;
+                        }
+                    }
+                    if (!remaining.isEmpty()) {
+                        is.add(remaining);
+                    }
+                }
+            }
+        } else {
+            ItemStack last = ItemStack.EMPTY;
+            for (ItemStack item : buffer) {
+                if (!item.isEmpty()) {
+                    if (!last.isEmpty()) {
+                        if (ItemUtils.countlessMatches(last, item)) {
+                            int lastCount = last.getCount();
+                            int maxCount = Math.min(last.getMaxStackSize(), this.getMaxStackSize());
+                            if (lastCount >= maxCount) {
+                                is.add(item);
+                            } else {
+                                int itemCount = item.getCount();
+                                if (itemCount + lastCount > maxCount) {
+                                    last.setCount(maxCount);
+                                    item.setCount(itemCount + lastCount - maxCount);
+                                    if (itemCount + lastCount - maxCount <= 0) {
+                                        item = last;
+                                    } else {
+                                        is.add(item);
+                                    }
+                                } else {
+                                    last.setCount(itemCount + lastCount);
+                                    item = last;
+                                }
+                            }
+                        } else {
+                            is.add(item);
                         }
                     } else {
                         is.add(item);
                     }
-                } else {
-                    is.add(item);
+                    last = item;
                 }
-                last = item;
             }
         }
         clearContent();
@@ -734,6 +772,7 @@ public class ItemBufferBlockEntity extends BlockEntity implements WorldlyContain
         tag.put("inputlimit",inputLimitTag);
         CompoundTag outputLimitTag = outputLimit.toTag();
         tag.put("outputlimit",outputLimitTag);
+        tag.putInt("is_compressing", isCompressing.getVal());
 
         return tag;
     }
@@ -795,6 +834,9 @@ public class ItemBufferBlockEntity extends BlockEntity implements WorldlyContain
         }
         if (tag.contains("outputlimit")) {
             outputLimit.fromTag(tag.getCompound("outputlimit"));
+        }
+        if (tag.contains("is_compressing")) {
+            this.isCompressing = ToggleState.fromValStatic(tag.getInt("is_compressing"));
         }
     }
 

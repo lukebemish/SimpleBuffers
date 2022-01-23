@@ -18,6 +18,7 @@ import net.minecraft.world.item.ItemStack;
 import simplebuffers.SimpleBuffers;
 import simplebuffers.SimpleBuffersNetworkingClient;
 import simplebuffers.SimpleBuffersNetworkingServer;
+import simplebuffers.blocks.entities.ItemBufferBlockEntity;
 import simplebuffers.blocks.entities.SidedFilterContainer;
 import simplebuffers.menu.FilterSlot;
 import simplebuffers.menu.ItemBufferMenu;
@@ -155,7 +156,17 @@ public class ItemBufferScreen extends AbstractContainerScreen<ItemBufferMenu> {
                     Component stateText = new TranslatableComponent("gui_text.simple_buffers.limit");
                     this.renderTooltip(matrixStack, stateText, mouseX, mouseY);
                 }
+            } else if (shownState == BufferScreenState.ITEMS) {
+            if (-19 <= relMouseX && 6 <= relMouseY && relMouseX < -19+16 && relMouseY < 6+18) {
+                ToggleState isCompressing = ToggleState.fromValStatic(menu.containerData.get(ItemBufferBlockEntity.maxDataVal));
+                Component stateText = TextComponent.EMPTY;
+                switch (isCompressing) {
+                    case ON -> stateText = new TranslatableComponent("gui_text.simple_buffers.compressing");
+                    case OFF -> stateText = new TranslatableComponent("gui_text.simple_buffers.fifo");
+                }
+                this.renderTooltip(matrixStack, stateText, mouseX, mouseY);
             }
+        }
         }
     }
 
@@ -360,6 +371,18 @@ public class ItemBufferScreen extends AbstractContainerScreen<ItemBufferMenu> {
                     this.setBlitOffset(0);
                 }
             }
+        } else {
+            RenderSystem.setShaderTexture(0, GUI);
+            ToggleState isCompressing = ToggleState.fromValStatic(menu.containerData.get(ItemBufferBlockEntity.maxDataVal));
+            this.blit(matrixStack, relX-25, relY, 0, 185, 28, 31);
+            if (-19 <= relMouseX && 6 <= relMouseY && relMouseX < -19+16 && relMouseY < 6+18) {
+                this.blit(matrixStack, relX-19, relY+6, 29, 185, 16, 16);
+            }
+            switch (isCompressing) {
+                case ON -> this.blit(matrixStack, relX-19, relY+6, 65, 185, 16, 16);
+                case OFF -> this.blit(matrixStack, relX-19, relY+6, 47, 185, 16, 16);
+            }
+
         }
     }
 
@@ -581,6 +604,12 @@ public class ItemBufferScreen extends AbstractContainerScreen<ItemBufferMenu> {
                     this.onRenderStateChange();
                     return true;
                 }
+            }
+        } else {
+            if (-19 <= relMouseX && 6 <= relMouseY && relMouseX < -19+16 && relMouseY < 6+18) {
+                this.menu.toggleCompressing();
+                this.onImportantStateChange();
+                return true;
             }
         }
 

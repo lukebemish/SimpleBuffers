@@ -9,6 +9,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.*;
 import net.minecraft.world.item.ItemStack;
 import simplebuffers.SimpleBuffersBlocks;
+import simplebuffers.blocks.entities.ItemBufferBlockEntity;
 import simplebuffers.blocks.entities.SidedFilterContainer;
 import simplebuffers.util.RelativeSide;
 
@@ -25,7 +26,12 @@ public class ItemBufferMenu extends AbstractContainerMenu {
     public ArrayList<FilterSlot> filterSlots = new ArrayList<FilterSlot>();
 
     public ItemBufferMenu(int i, Inventory inventory, FriendlyByteBuf buf) {
-        this(i, inventory, buf.readBlockPos(), new SimpleContainer(9), new SimpleContainer(9*2*6), new SimpleContainerData(6*9), buf.readInt());
+        this(i, inventory, buf.readBlockPos(), new SimpleContainer(9), new SimpleContainer(9*2*6), new SimpleContainerData(ItemBufferBlockEntity.maxDataVal + 1), buf.readInt());
+    }
+
+    public void toggleCompressing() {
+        int old = containerData.get(ItemBufferBlockEntity.maxDataVal);
+        containerData.set(ItemBufferBlockEntity.maxDataVal, old==1 ? 0 : 1);
     }
 
     public void progressIOState(RelativeSide side) {
