@@ -58,13 +58,17 @@ public class PlatformExtensionUtilImpl {
                         for (int i = 0; i < buffer.getContainerSize(); i++) {
                             ItemStack checkI = bufferCont.extractItem(i, 1, true);
                             if (!checkI.isEmpty()) {
-                                for (int j = 0; j < otherCont.getSlots(); j++) {
-                                    ItemStack checkOther = otherCont.insertItem(j, checkI, true);
-                                    if (checkOther.isEmpty()) {
-                                        ItemStack extracted = bufferCont.extractItem(i, 1, false);
-                                        otherCont.insertItem(j, extracted, false);
-                                        foundOne = true;
-                                        break searching;
+                                int maxAmount = buffer.outputLimit.getHeld(side);
+                                int count = buffer.getExternalFilterCount(side, otherCont::getStackInSlot, otherCont.getSlots());
+                                if (count < maxAmount) {
+                                    for (int j = 0; j < otherCont.getSlots(); j++) {
+                                        ItemStack checkOther = otherCont.insertItem(j, checkI, true);
+                                        if (checkOther.isEmpty()) {
+                                            ItemStack extracted = bufferCont.extractItem(i, 1, false);
+                                            otherCont.insertItem(j, extracted, false);
+                                            foundOne = true;
+                                            break searching;
+                                        }
                                     }
                                 }
                             }

@@ -22,7 +22,7 @@ public class ItemBufferMenu extends AbstractContainerMenu {
     public ArrayList<ToggleableSlot> itemSlots = new ArrayList<ToggleableSlot>();
     public BlockPos pos;
     public int speedRank;
-    public ArrayList<ToggleableSlot> filterSlots = new ArrayList<ToggleableSlot>();
+    public ArrayList<FilterSlot> filterSlots = new ArrayList<FilterSlot>();
 
     public ItemBufferMenu(int i, Inventory inventory, FriendlyByteBuf buf) {
         this(i, inventory, buf.readBlockPos(), new SimpleContainer(9), new SimpleContainer(9*2*6), new SimpleContainerData(6*9), buf.readInt());
@@ -46,10 +46,10 @@ public class ItemBufferMenu extends AbstractContainerMenu {
         int initial = containerData.get(RelativeSide.ORDERED_SIDES.indexOf(side)+offset);
         initial += increase ? 1 : -1;
         if (initial > 256) {
-            initial = 256;
+            initial = 0;
         }
         if (initial < 0) {
-            initial = 0;
+            initial = 256;
         }
         containerData.set(RelativeSide.ORDERED_SIDES.indexOf(side)+offset, initial);
         this.broadcastChanges();

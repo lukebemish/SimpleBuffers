@@ -6,15 +6,20 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.ItemStack;
 import simplebuffers.SimpleBuffers;
 import simplebuffers.SimpleBuffersNetworkingClient;
 import simplebuffers.SimpleBuffersNetworkingServer;
 import simplebuffers.blocks.entities.SidedFilterContainer;
+import simplebuffers.menu.FilterSlot;
 import simplebuffers.menu.ItemBufferMenu;
 import simplebuffers.menu.ToggleableSlot;
 import simplebuffers.util.*;
@@ -154,6 +159,14 @@ public class ItemBufferScreen extends AbstractContainerScreen<ItemBufferMenu> {
         }
     }
 
+    protected void renderItemWOSlot(FilterSlot slot) {
+        int i = slot.x+this.leftPos;
+        int j = slot.y+this.topPos;
+        ItemStack itemStack = slot.getItem();
+        this.itemRenderer.renderAndDecorateItem(this.minecraft.player, itemStack, i, j, slot.x + slot.y * this.imageWidth);
+        this.itemRenderer.renderGuiItemDecorations(this.font, itemStack, i, j, null);
+    }
+
     @Override
     protected void renderBg(PoseStack matrixStack, float partialTicks, int mouseX, int mouseY) {
         RenderSystem.setShaderTexture(0, GUI);
@@ -228,12 +241,14 @@ public class ItemBufferScreen extends AbstractContainerScreen<ItemBufferMenu> {
                 this.blit(matrixStack, relX+8+18, relY+35, 37, 185, 16, 8);
                 this.blit(matrixStack, relX+8+18+18, relY+35, 37, 185, 16, 8);
                 this.blit(matrixStack, relX+8+18*3, relY+35, 37, 185, 16, 8);
+                this.blit(matrixStack, relX+8+18*4, relY+35, 37, 185, 16, 8);
             }
             if (!ioState.isOut()) {
                 this.blit(matrixStack, relX+7, relY+52, 0, 202, 162, 18);
                 this.blit(matrixStack, relX+8+18, relY+35+8, 37, 185, 16, 8);
                 this.blit(matrixStack, relX+8+18+18, relY+35+8, 37, 185, 16, 8);
                 this.blit(matrixStack, relX+8+18*3, relY+35+8, 37, 185, 16, 8);
+                this.blit(matrixStack, relX+8+18*4, relY+35+8, 37, 185, 16, 8);
             }
             if (ioState.isIn()) {
                 //filter
@@ -269,6 +284,17 @@ public class ItemBufferScreen extends AbstractContainerScreen<ItemBufferMenu> {
                     this.blit(matrixStack, relX+8+18*4, relY+35, 19, 185, 16, 8);
                 }
                 if (showingLimitInput) {
+                    for (int m = 0; m < (this.menu).slots.size(); ++m) {
+                        Slot slot = (this.menu).slots.get(m);
+                        if (slot instanceof FilterSlot fs) {
+                            if (fs.isVis()) {
+                                RenderSystem.setShader(GameRenderer::getPositionTexShader);
+                                this.renderItemWOSlot(fs);
+                            }
+                        }
+                    }
+                    this.setBlitOffset(250);
+                    RenderSystem.setShaderTexture(0, GUI_SIDE_INFO);
                     this.blit(matrixStack, relX+68, relY+24, 176, 0, 40, 19);
                     if (99 <= relMouseX && 29 <= relMouseY && relMouseX < 104 && relMouseY < 33) {
                         this.blit(matrixStack, relX+99, relY+47-19, 207, 23, 5, 5);
@@ -276,6 +302,7 @@ public class ItemBufferScreen extends AbstractContainerScreen<ItemBufferMenu> {
                     if (99 <= relMouseX && 34 <= relMouseY && relMouseX < 104 && relMouseY < 39) {
                         this.blit(matrixStack, relX+99, relY+53-19, 207, 29, 5, 5);
                     }
+                    this.setBlitOffset(0);
                 }
             }
             if (ioState.isOut()) {
@@ -312,6 +339,17 @@ public class ItemBufferScreen extends AbstractContainerScreen<ItemBufferMenu> {
                     this.blit(matrixStack, relX+8+18*4, relY+35+8, 19, 185, 16, 8);
                 }
                 if (showingLimitOutput) {
+                    for (int m = 0; m < (this.menu).slots.size(); ++m) {
+                        Slot slot = (this.menu).slots.get(m);
+                        if (slot instanceof FilterSlot fs) {
+                            if (fs.isVis()) {
+                                RenderSystem.setShader(GameRenderer::getPositionTexShader);
+                                this.renderItemWOSlot(fs);
+                            }
+                        }
+                    }
+                    this.setBlitOffset(250);
+                    RenderSystem.setShaderTexture(0, GUI_SIDE_INFO);
                     this.blit(matrixStack, relX+68, relY+43, 176, 0, 40, 19);
                     if (99 <= relMouseX && 29+19 <= relMouseY && relMouseX < 104 && relMouseY < 33+19) {
                         this.blit(matrixStack, relX+99, relY+47, 207, 23, 5, 5);
@@ -319,6 +357,7 @@ public class ItemBufferScreen extends AbstractContainerScreen<ItemBufferMenu> {
                     if (99 <= relMouseX && 34+19 <= relMouseY && relMouseX < 104 && relMouseY < 39+19) {
                         this.blit(matrixStack, relX+99, relY+53, 207, 29, 5, 5);
                     }
+                    this.setBlitOffset(0);
                 }
             }
         }
@@ -346,19 +385,28 @@ public class ItemBufferScreen extends AbstractContainerScreen<ItemBufferMenu> {
             if (showingLimitInput) {
                 int limit = this.menu.containerData.get(RelativeSide.ORDERED_SIDES.indexOf(shownState.toSide())+42);
                 Component component = new TextComponent(Integer.toString(limit));
+                this.setBlitOffset(255);
+                stack.translate(0,0,this.getBlitOffset());
                 this.font.draw(stack, component, 74, 37-7, 16777215);
+                this.setBlitOffset(0);
+                stack.translate(0,0,this.getBlitOffset());
             }
             if (showingLimitOutput) {
                 int limit = this.menu.containerData.get(RelativeSide.ORDERED_SIDES.indexOf(shownState.toSide())+48);
                 Component component = new TextComponent(Integer.toString(limit));
+                this.setBlitOffset(255);
+                stack.translate(0,0,this.getBlitOffset());
                 this.font.draw(stack, component, 74, 56-7, 16777215);
+                this.setBlitOffset(0);
+                stack.translate(0,0,this.getBlitOffset());
             }
         }
     }
 
     public void onRenderStateChange() {
-        for (ToggleableSlot s : this.bufferMenu.filterSlots) {
+        for (FilterSlot s : this.bufferMenu.filterSlots) {
             s.turnOff();
+            s.setVis(false);
         }
         if (shownState != BufferScreenState.ITEMS) {
             for (ToggleableSlot s : this.bufferMenu.itemSlots) {
@@ -369,12 +417,14 @@ public class ItemBufferScreen extends AbstractContainerScreen<ItemBufferMenu> {
                 for (int i = 0; i < 9; i++) {
                     int filterNum = SidedFilterContainer.getIOSlotNum(true, i, shownState.toSide());
                     this.bufferMenu.filterSlots.get(filterNum).turnOn();
+                    this.bufferMenu.filterSlots.get(filterNum).setVis(true);
                 }
             }
             if (ioState.isOut()) {
                 for (int i = 0; i < 9; i++) {
                     int filterNum = SidedFilterContainer.getIOSlotNum(false, i, shownState.toSide());
                     this.bufferMenu.filterSlots.get(filterNum).turnOn();
+                    this.bufferMenu.filterSlots.get(filterNum).setVis(true);
                 }
             }
             if (showingLimitOutput || showingLimitInput) {

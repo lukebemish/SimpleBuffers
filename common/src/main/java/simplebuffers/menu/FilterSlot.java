@@ -24,6 +24,14 @@ public class FilterSlot extends ToggleableSlot {
         return ItemStack.EMPTY;
     }
 
+    private boolean vis = false;
+    public boolean isVis() {
+        return vis;
+    }
+    public void setVis(boolean vis) {
+        this.vis = vis;
+    }
+
     @Override
     public ItemStack safeInsert(ItemStack itemStack, int i) {
         ItemStack copyItemStack = itemStack.copy();

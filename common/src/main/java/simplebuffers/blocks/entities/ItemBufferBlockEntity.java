@@ -26,6 +26,8 @@ import simplebuffers.menu.ItemBufferMenu;
 import simplebuffers.util.*;
 
 import java.util.ArrayList;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 import java.util.stream.IntStream;
 
 public class ItemBufferBlockEntity extends BlockEntity implements WorldlyContainer, ExtendedMenuProvider {
@@ -155,6 +157,51 @@ public class ItemBufferBlockEntity extends BlockEntity implements WorldlyContain
                 return 64;
         }
         return 1;
+    }
+
+    public int getInternalFilterCount(RelativeSide side) {
+        ArrayList<ItemStack> filterList = filterContainer.getFilterList(true, side);
+        int count = 0;
+        for (ItemStack itemStack : buffer) {
+            boolean matches1 = inputFilterStates.getIOState(side) == FilterState.BLACKLIST;
+            boolean toSet = inputFilterStates.getIOState(side) == FilterState.WHITELIST || inputFilterStates.getIOState(side) == FilterState.RR;
+            for (ItemStack is : filterList) {
+                ItemStack is1 = is.copy();
+                is1.setCount(1);
+                ItemStack is2 = itemStack.copy();
+                is2.setCount(1);
+                if (ItemStack.matches(is1, is2)) {
+                    matches1 = toSet;
+                }
+            }
+            if (matches1) {
+                count += itemStack.getCount();
+            }
+        }
+        return count;
+    }
+
+    public int getExternalFilterCount(RelativeSide side, Function<Integer, ItemStack> provider, int numSlots) {
+        ArrayList<ItemStack> filterList = filterContainer.getFilterList(false, side);
+        int count = 0;
+        for (int i = 0; i < numSlots; i++) {
+            ItemStack itemStack = provider.apply(i);
+            boolean matches1 = outputFilterStates.getIOState(side) == FilterState.BLACKLIST;
+            boolean toSet = outputFilterStates.getIOState(side) == FilterState.WHITELIST || outputFilterStates.getIOState(side) == FilterState.RR;
+            for (ItemStack is : filterList) {
+                ItemStack is1 = is.copy();
+                is1.setCount(1);
+                ItemStack is2 = itemStack.copy();
+                is2.setCount(1);
+                if (ItemStack.matches(is1, is2)) {
+                    matches1 = toSet;
+                }
+            }
+            if (matches1) {
+                count += itemStack.getCount();
+            }
+        }
+        return count;
     }
 
     @Override
@@ -496,6 +543,18 @@ public class ItemBufferBlockEntity extends BlockEntity implements WorldlyContain
             return itemStack.copy();
         }
         RelativeSide side = RelativeSide.fromDirections(direction, this.getBlockState().getValue(ItemBufferBlock.FACING));
+        int alreadyHas = getInternalFilterCount(side);
+        int maxAmount = inputLimit.getHeld(side);
+        int countAdd = 0;
+        ItemStack itemStack2 = itemStack.copy();
+        if (maxAmount != 0) {
+            if (alreadyHas >= maxAmount) {
+                return itemStack.copy();
+            }
+            int diff = maxAmount - alreadyHas;
+            countAdd = itemStack.getCount() - Math.min(itemStack.getCount(), diff);
+            itemStack2.setCount(Math.min(itemStack.getCount(), diff));
+        }
         if (!canTransferRedstone(side, true)) {
             return itemStack.copy();
         }
@@ -510,18 +569,21 @@ public class ItemBufferBlockEntity extends BlockEntity implements WorldlyContain
                 this.rrUpdateBuffer(side, 0, true);
                 ItemStack is1 = filterList.get(rr_index_input[RelativeSide.getListPlace(side)]).copy();
                 int rr_count = is1.getCount();
-                ItemStack is2 = itemStack.copy();
+                ItemStack is2 = itemStack2.copy();
                 is1.setCount(1);
                 is2.setCount(1);
                 if (ItemStack.matches(is1,is2)) {
-                    ItemStack itemOut = itemStack.copy();
-                    if (rr_count <= itemStack.getCount()) {
-                        itemOut.setCount(itemStack.getCount()-rr_count);
+                    ItemStack itemOut = itemStack2.copy();
+                    if (rr_count <= itemStack2.getCount()) {
+                        itemOut.setCount(itemStack2.getCount()-rr_count);
                     } else {
                         itemOut = ItemStack.EMPTY;
                     }
                     rr_pending_face = RelativeSide.getListPlace(side);
                     rr_pending = true;
+                    int oldCount = itemOut.getCount();
+                    itemOut = itemStack2.copy();
+                    itemOut.setCount(oldCount+countAdd);
                     return itemOut;
                 }
                 return itemStack.copy();
@@ -537,10 +599,12 @@ public class ItemBufferBlockEntity extends BlockEntity implements WorldlyContain
                         matches1 = toSet;
                     }
                 }
-                return matches1 ? ItemStack.EMPTY : itemStack.copy();
+                ItemStack altStack = itemStack.copy();
+                altStack.setCount(countAdd);
+                return matches1 ? altStack: itemStack.copy();
             }
         }
-        return ItemStack.EMPTY;
+        return itemStack.copy();
     }
 
     @Override

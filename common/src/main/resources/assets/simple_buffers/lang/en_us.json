@@ -29,5 +29,5 @@
   "gui_text.simple_buffers.redstone_disabled": "Redstone: Disabled",
   "gui_text.simple_buffers.redstone_high": "Redstone: High",
   "gui_text.simple_buffers.redstone_low": "Redstone: Low",
-  "gui_text.simple_buffers.limit": "Stack Limit"
+  "gui_text.simple_buffers.limit": "Item Limit"
 }

@@ -53,7 +53,9 @@ public class PlatformExtensionUtilImpl {
                         ItemStack checkI = buffer.getBuffer().get(i).copy();
                         if (!checkI.isEmpty()) {
                             checkI.setCount(1);
-                            if (buffer.canTakeItemThroughFace(i, checkI, direction)) {
+                            int maxAmount = buffer.outputLimit.getHeld(side);
+                            int count = buffer.getExternalFilterCount(side, otherCon::getItem, otherCon.getContainerSize());
+                            if (count < maxAmount && buffer.canTakeItemThroughFace(i, checkI, direction)) {
                                 ItemStack remainder = HopperBlockEntity.addItem(buffer, otherCon, checkI, otherRelDir);
                                 if (remainder.isEmpty()) {
                                     ItemStack removed = buffer.removeItem(i, 1);
