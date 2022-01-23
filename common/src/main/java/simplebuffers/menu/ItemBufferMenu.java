@@ -25,7 +25,7 @@ public class ItemBufferMenu extends AbstractContainerMenu {
     public ArrayList<ToggleableSlot> filterSlots = new ArrayList<ToggleableSlot>();
 
     public ItemBufferMenu(int i, Inventory inventory, FriendlyByteBuf buf) {
-        this(i, inventory, buf.readBlockPos(), new SimpleContainer(9), new SimpleContainer(9*2*6), new SimpleContainerData(6*7), buf.readInt());
+        this(i, inventory, buf.readBlockPos(), new SimpleContainer(9), new SimpleContainer(9*2*6), new SimpleContainerData(6*9), buf.readInt());
     }
 
     public void progressIOState(RelativeSide side) {
@@ -38,6 +38,20 @@ public class ItemBufferMenu extends AbstractContainerMenu {
             case 3 -> newState = 2;
         }
         containerData.set(RelativeSide.ORDERED_SIDES.indexOf(side), newState);
+        this.broadcastChanges();
+    }
+
+    public void progressLimit(RelativeSide side, boolean isInput, boolean increase) {
+        int offset = isInput ? 42 : 48;
+        int initial = containerData.get(RelativeSide.ORDERED_SIDES.indexOf(side)+offset);
+        initial += increase ? 1 : -1;
+        if (initial > 256) {
+            initial = 256;
+        }
+        if (initial < 0) {
+            initial = 0;
+        }
+        containerData.set(RelativeSide.ORDERED_SIDES.indexOf(side)+offset, initial);
         this.broadcastChanges();
     }
 

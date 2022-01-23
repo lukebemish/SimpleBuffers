@@ -38,6 +38,8 @@ public class ItemBufferBlockEntity extends BlockEntity implements WorldlyContain
     public SidedStateHolder<ToggleState> outputPushStates;
     public SidedStateHolder<RedstoneState> inputRedstoneState;
     public SidedStateHolder<RedstoneState> outputRedstoneState;
+    public SidedIntegers inputLimit = new SidedIntegers();
+    public SidedIntegers outputLimit = new SidedIntegers();
 
     public final ContainerData dataAccess;
     public final SidedFilterContainer filterContainer;
@@ -93,6 +95,10 @@ public class ItemBufferBlockEntity extends BlockEntity implements WorldlyContain
                     return inputRedstoneState.getIOState(RelativeSide.ORDERED_SIDES.get(i-30)).getVal();
                 } else if (i<42) {
                     return outputRedstoneState.getIOState(RelativeSide.ORDERED_SIDES.get(i-36)).getVal();
+                } else if (i<48) {
+                    return inputLimit.getHeld(RelativeSide.ORDERED_SIDES.get(i-42));
+                } else if (i<54) {
+                    return outputLimit.getHeld(RelativeSide.ORDERED_SIDES.get(i-48));
                 }
                 return 0;
             }
@@ -119,11 +125,17 @@ public class ItemBufferBlockEntity extends BlockEntity implements WorldlyContain
                 } else if (i<42) {
                     outputRedstoneState.setIOState(RelativeSide.ORDERED_SIDES.get(i-36), RedstoneState.fromValStatic(j));
                     cont.setChanged();
+                } else if (i<48) {
+                    inputLimit.setHeld(RelativeSide.ORDERED_SIDES.get(i-42), j);
+                    cont.setChanged();
+                } else if (i<54) {
+                    outputLimit.setHeld(RelativeSide.ORDERED_SIDES.get(i-48), j);
+                    cont.setChanged();
                 }
             }
 
             public int getCount() {
-                return 6*7;
+                return 6*9;
             }
         };
         this.filterContainer = new SidedFilterContainer(this);
@@ -176,6 +188,12 @@ public class ItemBufferBlockEntity extends BlockEntity implements WorldlyContain
         if (tag.contains("outputredstonestates")) {
             outputRedstoneState.fromTag(tag.getCompound("outputredstonestates"));
         }
+        if (tag.contains("inputlimit")) {
+            inputLimit.fromTag(tag.getCompound("inputlimit"));
+        }
+        if (tag.contains("outputlimit")) {
+            outputLimit.fromTag(tag.getCompound("outputlimit"));
+        }
 
         //rr information
         if (tag.contains("rr_remaining_output")) {
@@ -219,6 +237,10 @@ public class ItemBufferBlockEntity extends BlockEntity implements WorldlyContain
         tag.put("inputredstonestates",inputRedstoneTag);
         CompoundTag outputRedstoneTag = outputRedstoneState.toTag();
         tag.put("outputredstonestates",outputRedstoneTag);
+        CompoundTag inputLimitTag = inputLimit.toTag();
+        tag.put("inputlimit",inputLimitTag);
+        CompoundTag outputLimitTag = outputLimit.toTag();
+        tag.put("outputlimit",outputLimitTag);
         //rr stuff
         tag.putIntArray("rr_remaining_output", rr_remaining_output);
         tag.putIntArray("rr_index_output", rr_index_output);
@@ -644,6 +666,10 @@ public class ItemBufferBlockEntity extends BlockEntity implements WorldlyContain
         tag.put("inputredstonestates",inputRedstoneTag);
         CompoundTag outputRedstoneTag = outputRedstoneState.toTag();
         tag.put("outputredstonestates",outputRedstoneTag);
+        CompoundTag inputLimitTag = inputLimit.toTag();
+        tag.put("inputlimit",inputLimitTag);
+        CompoundTag outputLimitTag = outputLimit.toTag();
+        tag.put("outputlimit",outputLimitTag);
 
         return tag;
     }
@@ -665,6 +691,8 @@ public class ItemBufferBlockEntity extends BlockEntity implements WorldlyContain
         tag.putInt("outputpushstates",outputPushStates.getIOState(side).getVal());
         tag.putInt("inputredstonestates",inputRedstoneState.getIOState(side).getVal());
         tag.putInt("outputredstonestates",outputRedstoneState.getIOState(side).getVal());
+        tag.putInt("inputlimit",inputLimit.getHeld(side));
+        tag.putInt("outputlimit",outputLimit.getHeld(side));
 
         return tag;
     }
@@ -697,6 +725,12 @@ public class ItemBufferBlockEntity extends BlockEntity implements WorldlyContain
         }
         if (tag.contains("outputredstonestates")) {
             outputRedstoneState.fromTag(tag.getCompound("outputredstonestates"));
+        }
+        if (tag.contains("inputlimit")) {
+            inputLimit.fromTag(tag.getCompound("inputlimit"));
+        }
+        if (tag.contains("outputlimit")) {
+            outputLimit.fromTag(tag.getCompound("outputlimit"));
         }
     }
 
@@ -731,6 +765,12 @@ public class ItemBufferBlockEntity extends BlockEntity implements WorldlyContain
         }
         if (tag.contains("outputredstonestates")) {
             outputRedstoneState.setIOState(side, tag.getInt("outputredstonestates"));
+        }
+        if (tag.contains("inputlimit")) {
+            inputLimit.setHeld(side, tag.getInt("inputlimit"));
+        }
+        if (tag.contains("outputlimit")) {
+            outputLimit.setHeld(side, tag.getInt("outputlimit"));
         }
     }
 }
