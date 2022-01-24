@@ -7,12 +7,10 @@ import net.minecraftforge.items.IItemHandlerModifiable;
 import org.jetbrains.annotations.NotNull;
 import simplebuffers.blocks.ItemBufferBlock;
 import simplebuffers.blocks.entities.ItemBufferBlockEntity;
-import simplebuffers.util.FilterState;
 import simplebuffers.util.ItemUtils;
 import simplebuffers.util.RelativeSide;
 
 import javax.annotation.Nonnull;
-import java.util.Properties;
 
 public class ItemBufferHandlerWrapper implements IItemHandler, IItemHandlerModifiable {
     private final ItemBufferBlockEntity be;

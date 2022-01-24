@@ -1,6 +1,5 @@
 package simplebuffers;
 
-import com.ibm.icu.impl.Assert;
 import dev.architectury.injectables.annotations.ExpectPlatform;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;

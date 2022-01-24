@@ -9,7 +9,6 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import simplebuffers.util.RelativeSide;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class SidedFilterContainer implements Container {
     public NonNullList<ItemStack> buffer;

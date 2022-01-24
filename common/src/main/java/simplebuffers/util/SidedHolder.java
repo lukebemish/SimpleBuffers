@@ -1,9 +1,6 @@
 package simplebuffers.util;
 
-import net.minecraft.nbt.CompoundTag;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.function.Supplier;
 
 public class SidedHolder<T> {
     public T left;
