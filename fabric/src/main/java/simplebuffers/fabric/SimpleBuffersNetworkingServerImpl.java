@@ -18,7 +18,7 @@ public class SimpleBuffersNetworkingServerImpl {
                 ServerLevel level = player.getLevel();
                 if (level.hasChunkAt(msg.pos)) {
                     BlockEntity be = level.getBlockEntity(msg.pos);
-                    if (be != null && be instanceof ItemBufferBlockEntity) {
+                    if (be instanceof ItemBufferBlockEntity) {
                         for (int i = 0; i < msg.ints.length; i++) {
                             ((ItemBufferBlockEntity) be).dataAccess.set(i, msg.ints[i]);
                         }

@@ -44,7 +44,7 @@ public class ItemBufferBlock extends HorizontalDirectionalBlock implements Entit
     }
 
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-        builder.add(new Property[]{FACING, ENABLED});
+        builder.add(FACING, ENABLED);
     }
 
     static {

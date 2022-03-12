@@ -1,6 +1,5 @@
 package simplebuffers;
 
-import dev.architectury.registry.block.BlockProperties;
 import dev.architectury.registry.menu.MenuRegistry;
 import dev.architectury.registry.registries.DeferredRegister;
 import dev.architectury.registry.registries.RegistrySupplier;
@@ -19,7 +18,7 @@ public class SimpleBuffersBlocks {
     public static final DeferredRegister<MenuType<?>> MENU_TYPES = DeferredRegister.create(SimpleBuffers.MOD_ID, Registry.MENU_REGISTRY);
 
     public static final RegistrySupplier<Block> ITEM_BUFFER = BLOCKS.register("item_buffer", () ->
-            new ItemBufferBlock(BlockProperties.of(Material.METAL).strength(1.5f)));
+            new ItemBufferBlock(Block.Properties.of(Material.METAL).strength(1.5f)));
 
     public static final RegistrySupplier<BlockEntityType<ItemBufferBlockEntity>> ITEM_BUFFER_BLOCK_ENTITY =
             BLOCK_ENTITIES.register("item_buffer", () -> BlockEntityType.Builder.of(PlatformExtensionUtil::getItemBufferBE, ITEM_BUFFER.get()).build(null));
