@@ -15,10 +15,10 @@
   "environment": "*",
   "entrypoints": {
     "main": [
-      "simplebuffers.fabric.SimpleBuffersFabric"
+      "com.github.lukebemish.simple_buffers.fabric.SimpleBuffersFabric"
     ],
     "client": [
-      "simplebuffers.fabric.SimpleBuffersClientFabric"
+      "com.github.lukebemish.simple_buffers.fabric.SimpleBuffersClientFabric"
     ]
   },
   "depends": {
