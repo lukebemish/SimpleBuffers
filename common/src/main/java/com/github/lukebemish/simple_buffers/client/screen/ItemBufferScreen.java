@@ -3,14 +3,14 @@ package com.github.lukebemish.simple_buffers.client.screen;
 import com.github.lukebemish.simple_buffers.SimpleBuffers;
 import com.github.lukebemish.simple_buffers.SimpleBuffersNetworkingClient;
 import com.github.lukebemish.simple_buffers.SimpleBuffersNetworkingServer;
+import com.github.lukebemish.simple_buffers.blocks.entities.ItemBufferBlockEntity;
+import com.github.lukebemish.simple_buffers.blocks.entities.SidedFilterContainer;
 import com.github.lukebemish.simple_buffers.menu.FilterSlot;
 import com.github.lukebemish.simple_buffers.menu.ItemBufferMenu;
 import com.github.lukebemish.simple_buffers.menu.ToggleableSlot;
 import com.github.lukebemish.simple_buffers.util.*;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.Component;
@@ -20,11 +20,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
-import com.github.lukebemish.simple_buffers.blocks.entities.ItemBufferBlockEntity;
-import com.github.lukebemish.simple_buffers.blocks.entities.SidedFilterContainer;
-import simplebuffers.util.*;
 
-@Environment(EnvType.CLIENT)
 public class ItemBufferScreen extends AbstractContainerScreen<ItemBufferMenu> {
     private final ResourceLocation GUI = new ResourceLocation(SimpleBuffers.MOD_ID, "textures/gui/item_buffer_gui.png");
     private final ResourceLocation GUI_SIDE_INFO = new ResourceLocation(SimpleBuffers.MOD_ID, "textures/gui/item_buffer_side_info.png");
