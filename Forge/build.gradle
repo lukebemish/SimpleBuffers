@@ -1,0 +1,143 @@
+plugins {
+    alias libs.plugins.forgegradle
+    alias libs.plugins.librarian
+    alias libs.plugins.mixin
+    alias libs.plugins.cursegradle
+    alias libs.plugins.minotaur
+}
+
+base.archivesName = "${mod_id}-forge-${libs.versions.minecraft.get()}"
+
+minecraft {
+    mappings channel: 'parchment', version: "${libs.versions.parchment.minecraft.get()}-${libs.versions.parchment.mappings.get()}-${libs.versions.minecraft.get()}"
+
+    runs {
+        client {
+            workingDirectory project.file('run')
+            ideaModule "${rootProject.name}.${project.name}.main"
+            taskName 'Client'
+            property 'mixin.env.remapRefMap', 'true'
+            property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
+            mods {
+                modClientRun {
+                    source sourceSets.main
+                    source project(":Common").sourceSets.main
+                }
+            }
+        }
+
+        server {
+            workingDirectory project.file('run')
+            ideaModule "${rootProject.name}.${project.name}.main"
+            taskName 'Server'
+            property 'mixin.env.remapRefMap', 'true'
+            property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
+            mods {
+                modServerRun {
+                    source sourceSets.main
+                    source project(":Common").sourceSets.main
+                }
+            }
+        }
+
+        data {
+            workingDirectory project.file('run')
+            ideaModule "${rootProject.name}.${project.name}.main"
+            args '--mod', mod_id, '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/')
+            taskName 'Data'
+            property 'mixin.env.remapRefMap', 'true'
+            property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
+            mods {
+                modDataRun {
+                    source sourceSets.main
+                    source project(":Common").sourceSets.main
+                }
+            }
+        }
+    }
+}
+
+sourceSets.main.resources.srcDir 'src/generated/resources'
+
+repositories {
+}
+
+dependencies {
+    minecraft libs.forge
+
+    annotationProcessor "org.spongepowered:mixin:${libs.versions.mixin.get()}:processor"
+
+    compileOnly(libs.gml.get())
+    runtimeOnly(fg.deobf(variantOf(libs.gml) { classifier 'all' }.get())) {
+        exclude module: 'transform'
+    }
+
+    compileOnly fg.deobf(libs.cgl.forge.get())
+
+    compileOnly project(path: ":Common", configuration: "namedElements")
+}
+
+tasks.withType(GroovyCompile) {
+    source project(":Common").sourceSets.main.allGroovy
+}
+
+tasks.withType(JavaCompile) {
+    source project(":Common").sourceSets.main.allJava
+}
+
+processResources {
+    from project(':Common').sourceSets.main.resources
+    exclude 'mods.groovy'
+}
+
+jar {
+    finalizedBy('reobfJar')
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            groupId = project.group
+            artifactId = "${mod_id}-${libs.versions.minecraft.get()}-forge"
+            version = project.version
+            artifacts = [jar, sourcesJar]
+        }
+    }
+}
+
+if (System.getenv('CURSEFORGE_KEY')) {
+    curseforge {
+        apiKey = System.getenv('CURSEFORGE_KEY')
+        project {
+            id = 'TODO'
+            releaseType = "${project.release_type}"
+            addGameVersion "${libs.versions.minecraft.get()}"
+            addGameVersion 'Forge'
+            mainArtifact(jar) {
+                displayName = "Simple Buffers [Forge] v$project.version"
+            }
+            relations {
+                requiredDependency 'gml'
+            }
+        }
+        options {
+            forgeGradleIntegration = true
+        }
+    }
+}
+
+if (System.getenv('MODRINTH_KEY')) {
+    modrinth {
+        token = System.getenv('MODRINTH_KEY')
+        projectId = 'TODO'
+        versionNumber = "$project.version"
+        versionType = "${project.release_type}"
+        detectLoaders = false
+        uploadFile = jar
+        gameVersions = ["${libs.versions.minecraft.get()}"]
+        loaders = ['forge']
+        dependencies {
+            required.project 'gml'
+        }
+    }
+}
