@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "DOD",
+    "OPO",
+    "DOD"
+  ],
+  "key": {
+    "D": {
+      "item": "minecraft:diamond"
+    },
+    "O": {
+      "item": "minecraft:obsidian"
+    },
+    "P": {
+      "item": "minecraft:paper"
+    }
+  },
+  "result": {
+    "item": "simple_buffers:speed_upgrade_1"
+  }
+}

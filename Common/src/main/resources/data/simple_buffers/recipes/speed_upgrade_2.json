@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "NON",
+    "OPO",
+    "NON"
+  ],
+  "key": {
+    "N": {
+      "item": "minecraft:netherite_ingot"
+    },
+    "O": {
+      "item": "minecraft:obsidian"
+    },
+    "P": {
+      "item": "minecraft:paper"
+    }
+  },
+  "result": {
+    "item": "simple_buffers:speed_upgrade_2"
+  }
+}
